@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 Juan Carlos Isaza
+# SPDX-License-Identifier: LicenseRef-Xiliux-Propietario
+[package]
+name = "winext4-fuse"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Host FUSE del motor ext4 (Linux): monta winext4 como un FS real. Mismo modelo de binding que WinFsp en Windows; el motor (nucleo) sigue sin dependencias."
+
+[lib]
+name = "winext4_fuse"
+path = "src/lib.rs"
+
+[[bin]]
+name = "winext4-fuse"
+path = "src/main.rs"
+
+[dependencies]
+winext4-nucleo = { path = "../nucleo" }
+# Host del sistema de archivos. `default-features=false` evita enlazar libfuse (usa el binario
+# fusermount3 para montar): no hace falta fuse3-devel, solo el helper ya presente.
+fuser = { version = "=0.14.0", default-features = false }
+libc = "0.2.179"
+
+[lints]
+workspace = true

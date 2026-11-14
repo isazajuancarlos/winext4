@@ -1,0 +1,64 @@
+winext4 — ext4 para Windows
+===========================
+
+Monta discos y particiones ext4 (Linux) como unidades de Windows, y trae las herramientas
+para verificarlos, recuperarlos tras un corte de luz, repararlos y rescatar archivos.
+Sin WSL y sin máquina virtual. Titular: Juan Carlos Isaza. Producto propietario.
+
+MONTAR AL ARRANCAR
+  1. Abre «winext4 - Montajes» del menú Inicio con el Bloc de notas COMO ADMINISTRADOR.
+  2. Añade una línea, por ejemplo:   \\.\PhysicalDrive2   Z:   lectura
+  3. En PowerShell como administrador:   Restart-Service winext4
+  La unidad aparece en el Explorador para todos los usuarios y se monta en cada arranque.
+  Al apagar, cada unidad se desmonta limpia.
+
+MONTAR A MANO
+  winext4 \\.\PhysicalDrive2 Z:\                  (solo lectura; consola de administrador)
+  winext4 C:\ruta\imagen.img W:\ --escritura      (imagen con lectura y escritura)
+  winext4 \\.\PhysicalDriveN X:\ --escritura --autorizo-disco-fisico   (disco: verifica antes)
+  winext4 --desmontar W:\                         (desmonta limpio)
+
+HERRAMIENTAS (winext4util, en el PATH)
+  winext4util info      <disco|imagen>            resumen del volumen y errores del kernel
+  winext4util verificar <disco|imagen>            comprobación completa, SOLO LECTURA
+  winext4util recuperar <imagen>                  aplica el journal pendiente tras un corte
+  winext4util reparar   <imagen>                  repara lo seguro; se niega ante lo grave
+  winext4util reparar   <disco> --autorizo-disco-fisico --deshacer D:\deshacer.bin
+  winext4util deshacer  <disco|imagen> <archivo>  vuelve atrás una reparación
+  winext4util rescatar  <disco|imagen> /ruta C:\destino   copia archivos sin escribir en el ext4
+  winext4util inodo     <disco|imagen> <número>   diagnóstico de un archivo
+  winext4util formatear <imagen> --tamano 512M [--etiqueta X]       crea un ext4 nuevo
+  winext4util formatear <disco> --autorizo-disco-fisico             formatea SU partición Linux
+  winext4util enlazar   <imagen> <destino> <ruta-nueva> [--simbolico]   enlace duro / simbólico
+  (un disco físico se escribe como \\.\PhysicalDriveN y exige consola de administrador)
+
+ENLACES DE LINUX EN WINDOWS
+  - Un enlace a un ARCHIVO se abre como ese archivo.
+  - Un enlace a una CARPETA (o absoluto, o roto) aparece como un archivo pequeño cuyo contenido
+    es su destino. No se entra por él a propósito: así borrar o copiar una carpeta nunca
+    atraviesa un enlace y toca lo que hay al otro lado.
+  - Crear enlaces con el Explorador o mklink no es posible (lo impide Dokan); usa
+    winext4util enlazar.
+
+SEGURIDAD DE LOS DATOS
+  - La escritura va por el journal: un corte de luz nunca deja el volumen inconsistente.
+  - Como Linux, las escrituras se agrupan y se confirman cada segundo (Linux: cada 5): tras un
+    corte se puede perder, como mucho, el último segundo de cambios. Un programa que pide
+    «guardar a disco» (FlushFileBuffers) lo tiene confirmado en ese momento.
+  - Ante cualquier característica del volumen que winext4 no sepa mantener, se niega a escribir.
+  - Escribir en un DISCO FÍSICO exige pedirlo dos veces: --escritura --autorizo-disco-fisico
+    (a mano) o el modo «escritura-disco-fisico» en montajes.txt («escritura» a secas se rechaza
+    para un disco). Antes de montar se COMPRUEBA el volumen: siempre la comprobación
+    rápida (segundos: sumas de superbloque, grupos y bitmaps); y la VERIFICACIÓN COMPLETA (minutos
+    en un disco grande) solo si hay motivo: errores registrados después de la última completa,
+    la última completa tiene más de 30 días, o la rápida encontró algo. Con errores, no monta.
+    Con la marca de errores del sistema de archivos, tampoco: primero se repara. El disco se abre
+    en EXCLUSIVA (si otro programa lo tiene abierto, se niega). Probado en un disco
+    virtual VHDX, no en tus discos.
+
+QUÉ INSTALA
+  C:\Program Files\winext4\   winext4.exe, winext4svc.exe (servicio), winext4util.exe,
+                              montajes.txt (tu configuración: se conserva al actualizar y al
+                              desinstalar), registros del servicio (servicio.log, montaje-X.log)
+  Driver Dokan 2 (firmado, LGPL; licencia en LICENCIA-Dokan-LGPL.txt), compartido con otros
+  programas: no se desinstala con winext4.

@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026 Juan Carlos Isaza
+# SPDX-License-Identifier: LicenseRef-Xiliux-Propietario
+[package]
+name = "winext4-util"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Herramientas de mantenimiento y recuperación de winext4: info, verificar, recuperar el journal y rescatar archivos. Multiplataforma; sin dependencias."
+
+[[bin]]
+name = "winext4util"
+path = "src/main.rs"
+
+[dependencies]
+winext4-nucleo = { path = "../nucleo" }
+
+[lints]
+workspace = true

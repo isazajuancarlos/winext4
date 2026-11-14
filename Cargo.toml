@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Juan Carlos Isaza
+# SPDX-License-Identifier: LicenseRef-Xiliux-Propietario
+[workspace]
+resolver = "2"
+members = ["nucleo", "fuse", "windows", "util", "servicio"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+license = "LicenseRef-Xiliux-Propietario"
+authors = ["Juan Carlos Isaza"]
+
+# Estándar de nacimiento (CLAUDE.md / D26): puerta de buenas prácticas de clippy.
+[workspace.lints.clippy]
+redundant_clone = "deny"
+needless_collect = "deny"
+
+# Estándar de nacimiento: dependencias optimizadas también en debug.
+[profile.dev.package."*"]
+opt-level = 3

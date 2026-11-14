@@ -1,0 +1,10 @@
+/target
+Cargo.lock
+*.img
+vendor/dokan/libdokan2.a
+/dist
+windows/DokanSetup.exe
+/target-alt
+/target-instalador
+/instalador/obj
+/instalador/vendido/*.msi

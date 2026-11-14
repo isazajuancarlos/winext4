@@ -1,0 +1,9 @@
+winext4 — sistema de archivos ext4 nativo para Windows
+Copyright (c) 2026 Juan Carlos Isaza
+
+Titularidad: Juan Carlos Isaza. Xiliux no es persona jurídica.
+Licencia: LicenseRef-Xiliux-Propietario (todos los derechos reservados).
+
+Este producto es código propio. No deriva de WinBtrfs (maharmstone/btrfs, LGPL)
+ni de ningún motor ext4 de terceros (lwext4, rust-fs-ext4, GPL): esos se estudian
+como referencia de arquitectura, no se copian ni se enlazan.

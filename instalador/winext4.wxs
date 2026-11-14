@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<!-- SPDX-FileCopyrightText: 2026 Juan Carlos Isaza -->
+<!-- SPDX-License-Identifier: LicenseRef-Xiliux-Propietario -->
+<!--
+  winext4.msi - el producto. SIN acciones personalizadas de script (VBScript/JScript estan
+  desactivados en equipos endurecidos): el servicio se registra con las tablas estandar
+  ServiceInstall/ServiceControl, el PATH con Environment, y todo lo demas son archivos.
+
+  Ubicacion: C:\Program Files\winext4 (solo administradores escriben ahi). El servicio
+  exige esa propiedad y se niega a arrancar si la carpeta o montajes.txt los puede escribir
+  un usuario sin privilegios.
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="winext4" Language="3082" Codepage="1252" Version="$(var.Version)"
+           Manufacturer="Juan Carlos Isaza" UpgradeCode="6BA62F48-4D37-4D8C-ABAE-C32DEA1ECF28">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Platform="x64"
+             Description="winext4 - sistema de archivos ext4 para Windows"
+             Comments="Monta, verifica, repara y rescata volumenes ext4 sin WSL." />
+    <MajorUpgrade DowngradeErrorMessage="Ya hay instalada una version mas nueva de winext4." Schedule="afterInstallInitialize" />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Condition Message="winext4 necesita Windows 10 o posterior de 64 bits.">
+      <![CDATA[Installed OR (VersionNT64 AND VersionNT >= 603)]]>
+    </Condition>
+
+    <!-- Dokan 2 (el driver firmado sobre el que monta winext4). Lo instala winext4-setup.exe. -->
+    <Property Id="DOKANDLL">
+      <DirectorySearch Id="BuscaSystem32" Path="[System64Folder]" Depth="0">
+        <FileSearch Id="BuscaDokan2" Name="dokan2.dll" />
+      </DirectorySearch>
+    </Property>
+    <Condition Message="Falta el driver Dokan 2. Instala winext4 con winext4-setup.exe, que lo incluye.">
+      <![CDATA[Installed OR DOKANDLL]]>
+    </Condition>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="winext4" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="CarpetaMenu" Name="winext4" />
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="Montador" Guid="*" Win64="yes">
+        <File Id="winext4.exe" Source="$(var.Bin)\winext4.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="Herramientas" Guid="*" Win64="yes">
+        <File Id="winext4util.exe" Source="$(var.Bin)\winext4util.exe" KeyPath="yes" />
+        <!-- winext4util usable desde cualquier consola. -->
+        <Environment Id="RutaPath" Name="PATH" Value="[INSTALLFOLDER]" Part="last" Action="set" System="yes" Permanent="no" />
+      </Component>
+      <Component Id="Servicio" Guid="*" Win64="yes">
+        <File Id="winext4svc.exe" Source="$(var.Bin)\winext4svc.exe" KeyPath="yes" />
+        <ServiceInstall Id="InstalaServicio" Name="winext4" DisplayName="winext4 (ext4 para Windows)"
+                        Description="Monta como unidades de Windows los discos ext4 de C:\Program Files\winext4\montajes.txt"
+                        Type="ownProcess" Start="auto" ErrorControl="normal" Account="LocalSystem" Vital="yes" />
+        <ServiceControl Id="ControlaServicio" Name="winext4" Start="install" Stop="both" Remove="uninstall" Wait="yes" />
+      </Component>
+      <!-- La configuracion del usuario: NO se sobrescribe al actualizar y NO se borra al
+           desinstalar (sus montajes son suyos). -->
+      <Component Id="Configuracion" Guid="*" Win64="yes" NeverOverwrite="yes" Permanent="yes">
+        <File Id="montajes.txt" Source="montajes.txt" KeyPath="yes" />
+      </Component>
+      <Component Id="Documentos" Guid="*" Win64="yes">
+        <File Id="LEEME.txt" Source="LEEME.txt" KeyPath="yes" />
+      </Component>
+      <Component Id="LicenciaDokan" Guid="*" Win64="yes">
+        <File Id="LicenciaDokan" Source="vendido\LICENCIA-Dokan-LGPL.txt" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="CarpetaMenu">
+      <Component Id="AccesosMenu" Guid="*" Win64="yes">
+        <Shortcut Id="AccesoLeeme" Name="winext4 - Lee primero" Target="[INSTALLFOLDER]LEEME.txt" WorkingDirectory="INSTALLFOLDER" />
+        <Shortcut Id="AccesoConfig" Name="winext4 - Montajes (montajes.txt)" Target="[INSTALLFOLDER]montajes.txt" WorkingDirectory="INSTALLFOLDER" />
+        <RemoveFolder Id="QuitaCarpetaMenu" On="uninstall" />
+        <RegistryValue Root="HKLM" Key="Software\Xiliux\winext4" Name="instalado" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="Todo" Title="winext4" Level="1">
+      <ComponentRef Id="Montador" />
+      <ComponentRef Id="Herramientas" />
+      <ComponentRef Id="Servicio" />
+      <ComponentRef Id="Configuracion" />
+      <ComponentRef Id="Documentos" />
+      <ComponentRef Id="LicenciaDokan" />
+      <ComponentRef Id="AccesosMenu" />
+    </Feature>
+
+    <Property Id="ARPCOMMENTS" Value="ext4 para Windows: montar, verificar, reparar y rescatar." />
+    <Property Id="ARPNOMODIFY" Value="1" />
+  </Product>
+</Wix>

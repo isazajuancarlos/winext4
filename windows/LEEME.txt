@@ -1,0 +1,25 @@
+winext4 — montar discos ext4 en Windows (solo lectura)
+======================================================
+
+Instalacion (Windows nuevo, no hace falta nada mas):
+  1. Clic derecho en "instalar.ps1" > Ejecutar con PowerShell (como administrador),
+     o en una consola de administrador:
+         powershell -ExecutionPolicy Bypass -File instalar.ps1
+  2. El instalador pone el driver Dokan (firmado) y el programa winext4.
+
+Uso (abrir un disco fisico exige consola de ADMINISTRADOR):
+  winext4 \\.\PhysicalDrive2 M:\             (disco fisico: auto-detecta la particion ext4 por su tipo GPT)
+  winext4 \\.\PhysicalDrive2 M:\ --offset 17408   (forzar el offset a mano; el "Offset" de Get-Partition)
+  winext4 C:\ruta\a\disco.img M:\           (una imagen ext4 en archivo -> unidad M:)
+  Para desmontar: expulsa la unidad, o cierra la ventana de winext4 (Ctrl+C).
+
+  El numero de PhysicalDriveN y el disco ext4: en PowerShell, `Get-Disk` y `Get-Partition`
+  (la particion ext4 sale como tipo "Unknown"/GPT Linux, sin letra).
+
+Que trae el paquete:
+  winext4.exe              el programa (propietario, Juan Carlos Isaza)
+  DokanSetup.exe           driver Dokan firmado (LGPL) — el "motor" de montaje de Windows
+  instalar.ps1             instalador
+  LICENCIA-Dokan-LGPL.txt  licencia de Dokan (se enlaza dinamicamente; es reemplazable)
+
+Nota: esta version es de SOLO LECTURA. La escritura esta en desarrollo.

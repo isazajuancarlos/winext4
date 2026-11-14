@@ -1,0 +1,17 @@
+# winext4 - montajes al arrancar (lo lee el servicio «winext4»)
+#
+# Una línea por unidad:   dispositivo   letra   modo   [offset]
+#   dispositivo : \\.\PhysicalDriveN (disco entero: se detecta la partición ext4)
+#                 o la ruta de una imagen .img
+#   modo        : lectura  |  escritura (imágenes)  |  escritura-disco-fisico (discos)
+#                 «escritura» a secas se rechaza para un \\.\PhysicalDriveN: un disco con datos se
+#                 desbloquea solo con la palabra explícita. Al montarlo se verifica antes (con
+#                 errores no monta) y se abre en exclusiva (no dos montajes del mismo disco).
+#   offset      : opcional, en bytes (si la partición no se detecta sola)
+#
+# Para ver los discos: en PowerShell, Get-Disk y Get-Partition.
+# Este archivo solo lo pueden editar los administradores (Bloc de notas como administrador).
+# Tras editarlo: Restart-Service winext4
+#
+# Ejemplo (quita el # para activarlo):
+# \\.\PhysicalDrive2   Z:   lectura

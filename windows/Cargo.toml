@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Juan Carlos Isaza
+# SPDX-License-Identifier: LicenseRef-Xiliux-Propietario
+[package]
+name = "winext4-windows"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Host de Windows del motor ext4 sobre Dokan, a través de rustkan (dokan2.dll cargada en ejecución desde System32). Toolchain x86_64-pc-windows-gnu; se PRUEBA en Windows con el driver Dokan."
+
+[[bin]]
+name = "winext4"
+path = "src/main.rs"
+
+[target.'cfg(windows)'.dependencies]
+winext4-nucleo = { path = "../nucleo" }
+rustkan = { path = "../../rustkan" }
+
+[lints]
+workspace = true

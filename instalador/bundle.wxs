@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<!-- SPDX-FileCopyrightText: 2026 Juan Carlos Isaza -->
+<!-- SPDX-License-Identifier: LicenseRef-Xiliux-Propietario -->
+<!--
+  winext4-setup.exe - UN solo ejecutable: encadena el MSI OFICIAL de Dokan 2.3.1 (firmado por
+  sus mantenedores) y winext4.msi. Si Dokan ya esta, Burn lo detecta y lo salta. Sin scripts.
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+  <Bundle Name="winext4" Version="$(var.Version)" Manufacturer="Juan Carlos Isaza"
+          UpgradeCode="6BD3DB5B-F4C1-4F1F-9770-0FD5EF1E98AA">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
+      <bal:WixStandardBootstrapperApplication LicenseUrl="" SuppressOptionsUI="yes" />
+    </BootstrapperApplicationRef>
+    <Chain>
+      <!-- El driver: compartido con otros programas que usen Dokan; no se desinstala con winext4. -->
+      <MsiPackage Id="Dokan" SourceFile="vendido\Dokan_x64.msi" Vital="yes" Permanent="yes" Compressed="yes" />
+      <MsiPackage Id="Winext4" SourceFile="$(var.Msi)" Vital="yes" Compressed="yes" />
+    </Chain>
+  </Bundle>
+</Wix>

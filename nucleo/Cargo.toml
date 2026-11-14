@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2026 Juan Carlos Isaza
+# SPDX-License-Identifier: LicenseRef-Xiliux-Propietario
+[package]
+name = "winext4-nucleo"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Motor ext4 propio: lectura/escritura del formato en disco, agnóstico de plataforma (Linux lo prueba, Windows lo consume)."
+
+[lints]
+workspace = true

@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Juan Carlos Isaza
+# SPDX-License-Identifier: LicenseRef-Xiliux-Propietario
+[package]
+name = "winext4-servicio"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Servicio de Windows de winext4: monta al arrancar las unidades ext4 de montajes.txt (un proceso winext4 por montaje, desmontaje limpio al parar). Sin dependencias."
+
+[[bin]]
+name = "winext4svc"
+path = "src/main.rs"
+
+[lints]
+workspace = true
